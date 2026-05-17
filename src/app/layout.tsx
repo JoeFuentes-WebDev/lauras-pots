@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Geist } from "next/font/google";
-import { prisma } from "@/lib/prisma";
+import { unstable_noStore as noStore } from "next/cache";
 import "./globals.css";
 
 const geist = Geist({
@@ -13,22 +13,26 @@ export const metadata: Metadata = {
   description: "Handmade pottery by Laura. Find your perfect piece.",
 };
 
+async function getHeroImage(): Promise<string | null> {
+  noStore();
+  try {
+    const { prisma } = await import("@/lib/prisma");
+    const hero = await prisma.heroImage.findFirst({
+      where: { active: true },
+      orderBy: { order: 'asc' },
+    });
+    return hero?.imageUrl ?? null;
+  } catch {
+    return null;
+  }
+}
+
 export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  let heroImageUrl: string | null = null;
-
-  try {
-    const hero = await prisma.heroImage.findFirst({
-      where: { active: true },
-      orderBy: { order: 'asc' },
-    });
-    heroImageUrl = hero?.imageUrl ?? null;
-  } catch {
-    // DB not available, fall back to gradient
-  }
+  const heroImageUrl = await getHeroImage();
 
   return (
     <html lang="en" className={`${geist.variable} h-full antialiased`}>
@@ -39,7 +43,6 @@ export default async function RootLayout({
           : { background: 'radial-gradient(ellipse at center, #f5f5f5 0%, #d4d4d4 60%, #a3a3a3 100%)' }
         }
       >
-        {/* Blurred faded hero background */}
         {heroImageUrl && (
           <div
             className="fixed inset-0 pointer-events-none"
@@ -47,15 +50,13 @@ export default async function RootLayout({
               backgroundImage: `url(${heroImageUrl})`,
               backgroundSize: 'cover',
               backgroundPosition: 'center',
-              filter: 'blur(12px) brightness(3.5) saturate(5)',
-              transform: 'scale(1.5)',
-              opacity: '.25'
+              filter: 'blur(32px) brightness(0.85) saturate(0.7)',
+              transform: 'scale(1.1)',
             }}
             aria-hidden="true"
           />
         )}
 
-        {/* Mobile frame */}
         <div className="relative w-full max-w-[430px] min-h-screen bg-white shadow-2xl flex flex-col">
           {children}
         </div>

@@ -115,8 +115,8 @@ export function SwipeCard({ product, onSwipeRight, onSwipeLeft, onPin, remaining
 
         {/* Expandable detail panel */}
         <div
-          className="overflow-hidden transition-all duration-300 ease-in-out"
-          style={{ maxHeight: expanded ? '400px' : '0px' }}
+          className="overflow-y-auto transition-all duration-300 ease-in-out"
+          style={{ maxHeight: expanded ? '60vh' : '0px' }}
         >
           <div className="px-5 pt-4 pb-5 space-y-4">
             {product.tags && product.tags.length > 0 && (

@@ -22,13 +22,8 @@ export default function SplashPage() {
     })
 
     fetch('/api/categories').then(r => r.json()).then((data) => {
-      const cats = (data.categories ?? []).map((c: string) =>
-        c.charAt(0).toUpperCase() + c.slice(1)
-      )
-      const tags = (data.popularTags ?? []).map((t: string) =>
-        t.charAt(0).toUpperCase() + t.slice(1)
-      )
-      // Dedupe, combine, put Show All first
+      const cats = (data.categories ?? []) as string[]
+      const tags = (data.popularTags ?? []) as string[]
       const combined = [...new Set([...cats, ...tags])]
       setPills(combined)
     })
@@ -43,6 +38,10 @@ export default function SplashPage() {
   }, [images.length])
 
   const current = images[currentIdx]
+
+  const handlePill = (value: string) => {
+    router.push(`/shop?q=${encodeURIComponent(value)}`)
+  }
 
   return (
     <main className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden bg-stone-900">
@@ -77,24 +76,23 @@ export default function SplashPage() {
         <div className="flex flex-wrap gap-3 justify-center">
           {/* Show All — always first */}
           <button
-            onClick={() => router.push('/shop?q=')}
+            onClick={() => handlePill('')}
             className="bg-white/30 backdrop-blur-sm border border-white/50 text-white font-bold px-5 py-2.5 rounded-full hover:bg-white/40 transition-all text-sm"
           >
             Show All
           </button>
 
-          {/* Dynamic pills */}
+          {/* Dynamic pills from DB — raw values, capitalize for display */}
           {pills.map((pill) => (
             <button
               key={pill}
-              onClick={() => router.push(`/shop?q=${encodeURIComponent(pill.toLowerCase())}`)}
-              className="bg-white/20 backdrop-blur-sm border border-white/30 text-white font-medium px-5 py-2.5 rounded-full hover:bg-white/30 transition-all text-sm"
+              onClick={() => handlePill(pill)}
+              className="bg-white/20 backdrop-blur-sm border border-white/30 text-white font-medium px-5 py-2.5 rounded-full hover:bg-white/30 transition-all text-sm capitalize"
             >
               {pill}
             </button>
           ))}
 
-          {/* Fallback if no pills loaded yet */}
           {pills.length === 0 && (
             <p className="text-white/40 text-sm">Loading...</p>
           )}

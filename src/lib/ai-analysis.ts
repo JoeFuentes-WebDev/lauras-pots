@@ -34,7 +34,7 @@ export async function analyzeProductImage(imageBase64: string, mediaType: string
 Respond ONLY with a JSON object (no markdown, no backticks) with these fields:
 {
   "name": "short descriptive product name (e.g. 'Terracotta Mug', 'Blue Glazed Bowl')",
-  "category": "one of: mug, bowl, vase, plate, set, other",
+  "category": "one of exactly: mug, bowl, vase, plate, set, other (always lowercase singular)",
   "pieceCount": number of individual pottery pieces visible in the image,
   "description": "1-2 sentence description of the piece, focusing on glaze, texture, shape",
   "tags": ["array", "of", "descriptive", "tags", "like", "terracotta", "glazed", "stoneware"],

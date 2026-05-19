@@ -25,14 +25,7 @@ async function handleAction(chatId: string, action: string, orderId: string) {
 
   if (action === 'YES') {
     await sendTelegramMessage(chatId, '⏳ Generating your shipping label...')
-
-    // TEST MODE - skip real Shippo call
-    if (process.env.SHIPPO_TEST_MODE === 'true') {
-      await prisma.order.update({ where: { id: order.id }, data: { status: 'PAID' } })
-      await sendTelegramMessage(chatId, `📦 TEST MODE\nShip: ${productNames}\n\n(No real label - Shippo test mode)`)
-      return
-    }
-
+    
     try {
       const Stripe = (await import('stripe')).default
       const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)

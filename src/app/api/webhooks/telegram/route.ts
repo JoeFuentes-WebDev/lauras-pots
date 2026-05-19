@@ -37,6 +37,10 @@ async function handleAction(chatId: string, action: string, orderId: string) {
         return
       }
 
+      console.log('addressFrom:', {
+        email: process.env.LAURA_ADDRESS_EMAIL,
+        phone: process.env.LAURA_ADDRESS_PHONE,
+      })
       const shipment = await shippo.shipments.create({
         addressFrom: {
           name: process.env.LAURA_ADDRESS_NAME!,
